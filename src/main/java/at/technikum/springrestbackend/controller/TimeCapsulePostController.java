@@ -19,24 +19,25 @@ public class TimeCapsulePostController {
     }
 
     @PostMapping
-    public TimeCapsulePost create(@NonNull @RequestBody TimeCapsulePost post) {
-        return service.save(post);
+    public ResponseEntity<TimeCapsulePost> createPost(@NonNull @RequestBody TimeCapsulePost post) {
+        return ResponseEntity.ok(service.save(post));
     }
 
     @GetMapping
-    public List<TimeCapsulePost> getAll() {
-        return service.findAll();
+    public ResponseEntity<List<TimeCapsulePost>> getAllPosts() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TimeCapsulePost> getOne(@NonNull @PathVariable Long id) {
+    public ResponseEntity<TimeCapsulePost> getPostById(@NonNull @PathVariable Long id) {
         return service.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@NonNull @PathVariable Long id) {
+    public ResponseEntity<Void> deletePost(@NonNull @PathVariable Long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
