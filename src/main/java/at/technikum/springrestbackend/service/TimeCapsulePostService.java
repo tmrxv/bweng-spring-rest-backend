@@ -20,9 +20,9 @@ public class TimeCapsulePostService {
     }
 
     // CRUD operations
-    public TimeCapsulePostResponse save(@NonNull TimeCapsulePostRequest request) {
+    public TimeCapsulePostResponse save(TimeCapsulePostRequest request) {
         TimeCapsulePost entity = toEntity(request);
-        TimeCapsulePost saved = repository.save(entity);
+        TimeCapsulePost saved = repository.save(entity); // may return null
         return toResponse(saved);
     }
 
