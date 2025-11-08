@@ -2,7 +2,7 @@ package at.technikum.springrestbackend.service;
 
 import at.technikum.springrestbackend.dto.TimeCapsulePostRequest;
 import at.technikum.springrestbackend.dto.TimeCapsulePostResponse;
-import at.technikum.springrestbackend.model.TimeCapsulePost;
+import at.technikum.springrestbackend.entity.TimeCapsulePost;
 import at.technikum.springrestbackend.repository.TimeCapsulePostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.lang.NonNull;
