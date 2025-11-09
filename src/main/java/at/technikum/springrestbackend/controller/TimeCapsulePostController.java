@@ -1,10 +1,11 @@
 package at.technikum.springrestbackend.controller;
 
-import at.technikum.springrestbackend.model.TimeCapsulePost;
+import at.technikum.springrestbackend.dto.TimeCapsulePostRequest;
+import at.technikum.springrestbackend.dto.TimeCapsulePostResponse;
 import at.technikum.springrestbackend.service.TimeCapsulePostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.lang.NonNull;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -19,24 +20,25 @@ public class TimeCapsulePostController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeCapsulePost> createPost(@NonNull @RequestBody TimeCapsulePost post) {
-        return ResponseEntity.ok(service.save(post));
+    public ResponseEntity<TimeCapsulePostResponse> createPost(
+            @Valid @org.springframework.lang.NonNull @RequestBody TimeCapsulePostRequest request) {
+        return ResponseEntity.ok(service.save(request));
     }
 
     @GetMapping
-    public ResponseEntity<List<TimeCapsulePost>> getAllPosts() {
+    public ResponseEntity<List<TimeCapsulePostResponse>> getAllPosts() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TimeCapsulePost> getPostById(@NonNull @PathVariable Long id) {
+    public ResponseEntity<TimeCapsulePostResponse> getPostById(@PathVariable long id) {
         return service.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                      .map(ResponseEntity::ok)
+                      .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@NonNull @PathVariable Long id) {
+    public ResponseEntity<Void> deletePost(@PathVariable(required = true) long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

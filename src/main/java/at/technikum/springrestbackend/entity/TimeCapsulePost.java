@@ -1,4 +1,4 @@
-package at.technikum.springrestbackend.model;
+package at.technikum.springrestbackend.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

@@ -1,6 +1,8 @@
 package at.technikum.springrestbackend.service;
 
-import at.technikum.springrestbackend.model.TimeCapsulePost;
+import at.technikum.springrestbackend.dto.TimeCapsulePostRequest;
+import at.technikum.springrestbackend.dto.TimeCapsulePostResponse;
+import at.technikum.springrestbackend.entity.TimeCapsulePost;
 import at.technikum.springrestbackend.repository.TimeCapsulePostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.lang.NonNull;
@@ -17,19 +19,47 @@ public class TimeCapsulePostService {
         this.repository = repository;
     }
 
-    public TimeCapsulePost save(@NonNull TimeCapsulePost post) {
-        return repository.save(post);
+    // CRUD operations
+    public TimeCapsulePostResponse save(TimeCapsulePostRequest request) {
+        TimeCapsulePost entity = toEntity(request);
+        TimeCapsulePost saved = repository.save(entity); // may return null
+        return toResponse(saved);
     }
 
-    public List<TimeCapsulePost> findAll() {
-        return repository.findAll();
+    public List<TimeCapsulePostResponse> findAll() {
+        return repository.findAll()
+                         .stream()
+                         .map(this::toResponse)
+                         .toList();
     }
 
-    public Optional<TimeCapsulePost> findById(@NonNull Long id) {
-        return repository.findById(id);
+    public Optional<TimeCapsulePostResponse> findById(@NonNull Long id) {
+        return repository.findById(id).map(this::toResponse);
     }
 
     public void delete(@NonNull Long id) {
         repository.deleteById(id);
+    }
+
+    // Mapping methods
+    public TimeCapsulePost toEntity(TimeCapsulePostRequest request) {
+        TimeCapsulePost entity = new TimeCapsulePost();
+        entity.setUserId(request.getUserId());
+        entity.setTitle(request.getTitle());
+        entity.setMessage(request.getMessage());
+        entity.setSendAt(request.getSendAt());
+        return entity;
+    }
+
+    public TimeCapsulePostResponse toResponse(TimeCapsulePost entity) {
+        TimeCapsulePostResponse dto = new TimeCapsulePostResponse();
+        dto.setId(entity.getId());
+        dto.setUserId(entity.getUserId());
+        dto.setTitle(entity.getTitle());
+        dto.setMessage(entity.getMessage());
+        dto.setSendAt(entity.getSendAt());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setUpdatedAt(entity.getUpdatedAt());
+        return dto;
     }
 }

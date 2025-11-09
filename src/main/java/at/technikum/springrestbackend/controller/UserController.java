@@ -2,7 +2,7 @@ package at.technikum.springrestbackend.controller;
 
 import at.technikum.springrestbackend.dto.UpdateUserRequest;
 import at.technikum.springrestbackend.dto.UserResponse;
-import at.technikum.springrestbackend.model.User;
+import at.technikum.springrestbackend.entity.User;
 import at.technikum.springrestbackend.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

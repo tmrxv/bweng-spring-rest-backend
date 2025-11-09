@@ -1,6 +1,6 @@
 package at.technikum.springrestbackend.repository;
 
-import at.technikum.springrestbackend.model.User;
+import at.technikum.springrestbackend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
