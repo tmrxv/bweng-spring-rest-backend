@@ -2,52 +2,30 @@ package at.technikum.springrestbackend.controller;
 
 import at.technikum.springrestbackend.dto.RegisterRequest;
 import at.technikum.springrestbackend.dto.UserResponse;
-import at.technikum.springrestbackend.entity.User;
-import at.technikum.springrestbackend.repository.UserRepository;
+import at.technikum.springrestbackend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public AuthController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
-        if (userRepository.existsByEmail(req.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already in use");
+        try {
+            UserResponse resp = userService.register(req);
+            return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+        } catch (DataIntegrityViolationException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
         }
-        if (userRepository.existsByUsername(req.getUsername())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already in use");
-        }
-
-        User user = new User();
-        user.setEmail(req.getEmail());
-        user.setUsername(req.getUsername());
-        // NOTE: real hashing/JWT will come in a later milestone per spec
-        user.setPassword(req.getPassword());
-        user.setCountry(req.getCountry());
-        user.setProfileImageUrl(req.getProfileImageUrl());
-        user.setRole("USER");
-
-        User saved = userRepository.save(user);
-
-        UserResponse resp = new UserResponse(
-                saved.getId(),
-                saved.getEmail(),
-                saved.getUsername(),
-                saved.getCountry(),
-                saved.getProfileImageUrl(),
-                saved.getRole(),
-                saved.getCreatedAt()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(resp);
     }
 }
