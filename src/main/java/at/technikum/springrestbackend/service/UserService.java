@@ -9,15 +9,22 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import at.technikum.springrestbackend.dto.RegisterRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                    PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
+
 
     public Page<UserResponse> listUsers(Pageable pageable) {
         return userRepository.findAll(pageable)
@@ -55,8 +62,9 @@ public class UserService {
         }
 
         if (req.getPassword() != null) {
-            user.setPassword(req.getPassword());
+            user.setPassword(passwordEncoder.encode(req.getPassword()));
         }
+
         if (req.getCountry() != null) {
             user.setCountry(req.getCountry());
         }
@@ -88,5 +96,25 @@ public class UserService {
                 user.getRole(),
                 user.getCreatedAt()
         );
+    }
+
+    public UserResponse register(RegisterRequest req) {
+        if (userRepository.existsByEmail(req.getEmail())) {
+            throw new DataIntegrityViolationException("Email already in use");
+        }
+        if (userRepository.existsByUsername(req.getUsername())) {
+            throw new DataIntegrityViolationException("Username already in use");
+        }
+
+        User user = new User();
+        user.setEmail(req.getEmail());
+        user.setUsername(req.getUsername());
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
+        user.setCountry(req.getCountry());
+        user.setProfileImageUrl(req.getProfileImageUrl());
+        user.setRole("USER");
+
+        User saved = userRepository.save(user);
+        return toResponse(saved);
     }
 }
