@@ -6,16 +6,18 @@ public class LoginResponse {
     private String email;
     private String username;
     private String role;
+    private String token;
 
     public LoginResponse() {
-        // default constructor
+        
     }
 
-    public LoginResponse(Long id, String email, String username, String role) {
+    public LoginResponse(Long id, String email, String username, String role, String token) {
         this.id = id;
         this.email = email;
         this.username = username;
         this.role = role;
+        this.token = token;
     }
 
     public Long getId() {
@@ -48,5 +50,13 @@ public class LoginResponse {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getToken() { 
+        return token; 
+    }
+
+    public void setToken(String token) { 
+        this.token = token; 
     }
 }

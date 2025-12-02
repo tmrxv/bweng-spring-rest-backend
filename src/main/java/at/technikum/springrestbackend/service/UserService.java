@@ -45,7 +45,6 @@ public class UserService {
                         new EntityNotFoundException("User with id " + id + " not found")
                 );
 
-        // Email ändern + Eindeutigkeit prüfen
         if (req.getEmail() != null && !req.getEmail().equals(user.getEmail())) {
             if (userRepository.existsByEmail(req.getEmail())) {
                 throw new DataIntegrityViolationException("Email already in use");
@@ -53,7 +52,6 @@ public class UserService {
             user.setEmail(req.getEmail());
         }
 
-        // Username ändern + Eindeutigkeit prüfen
         if (req.getUsername() != null && !req.getUsername().equals(user.getUsername())) {
             if (userRepository.existsByUsername(req.getUsername())) {
                 throw new DataIntegrityViolationException("Username already in use");
