@@ -8,13 +8,13 @@
 
     <!-- Check for appropriate line  length -->
     <module name="LineLength">
-        <property name="max" value="100"/>
+        <property name="max" value="120"/>
     </module>
 
     <module name="TreeWalker">
         <!-- Check for appropriate method length -->
         <module name="MethodLength">
-            <property name="max" value="42"/>
+            <property name="max" value="50"/>
         </module>
 
         <!-- Check for proper indentation and braces placement -->

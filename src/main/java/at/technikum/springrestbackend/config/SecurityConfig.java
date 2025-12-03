@@ -23,21 +23,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
-                .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                // Public endpoints
+                .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
 
-                // Stateless JWT
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Role-based endpoints
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/users/**").hasRole("ADMIN")
+                .requestMatchers("/api/posts/**").hasAnyRole("USER", "ADMIN")
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .anyRequest().authenticated()
-                )
-
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                // All other endpoints require authentication
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
