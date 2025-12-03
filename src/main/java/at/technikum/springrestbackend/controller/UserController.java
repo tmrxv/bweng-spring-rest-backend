@@ -1,5 +1,7 @@
 package at.technikum.springrestbackend.controller;
 
+import at.technikum.springrestbackend.entity.User;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import at.technikum.springrestbackend.dto.UpdateUserRequest;
 import at.technikum.springrestbackend.dto.UserResponse;
 import at.technikum.springrestbackend.service.UserService;
@@ -29,13 +31,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
-        try {
-            UserResponse user = userService.getUser(id);
-            return ResponseEntity.ok(user);
-        } catch (EntityNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<UserResponse> getUser(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+        if (!currentUser.getRole().equals("ADMIN") && !currentUser.getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        UserResponse user = userService.getUser(id);
+        return ResponseEntity.ok(user);
     }
 
     @PutMapping("/{id}")
