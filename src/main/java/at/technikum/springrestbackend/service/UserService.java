@@ -1,5 +1,4 @@
 package at.technikum.springrestbackend.service;
-
 import at.technikum.springrestbackend.dto.UpdateUserRequest;
 import at.technikum.springrestbackend.dto.UserResponse;
 import at.technikum.springrestbackend.entity.User;
