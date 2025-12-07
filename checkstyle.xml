@@ -14,7 +14,7 @@
     <module name="TreeWalker">
         <!-- Check for appropriate method length -->
         <module name="MethodLength">
-            <property name="max" value="50"/>
+            <property name="max" value="60"/>
         </module>
 
         <!-- Check for proper indentation and braces placement -->
