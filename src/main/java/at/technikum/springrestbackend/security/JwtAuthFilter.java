@@ -28,31 +28,39 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            HttpServletRequest request,
+            HttpServletRequest req,
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String path = req.getServletPath();
+
+        // Swagger and public endpoints → skip JWT filter
+        if (path.startsWith("/swagger-ui")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/api/auth")) {
+            filterChain.doFilter(req, response);
+            return;
+        }
+
+        String authHeader = req.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
+            filterChain.doFilter(req, response);
             return;
         }
 
         String token = authHeader.substring(7);
-        String email = null;
+        String email;
 
         try {
             email = jwtService.extractSubject(token);
         } catch (Exception e) {
-            filterChain.doFilter(request, response);
+            filterChain.doFilter(req, response);
             return;
         }
 
-        // only authenticate if not already authenticated
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
             var user = userRepository.findByEmail(email).orElse(null);
 
             if (user != null && jwtService.isTokenValid(token, email)) {
@@ -63,15 +71,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         user.getAuthorities()
                 );
 
-
                 authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
+                        new WebAuthenticationDetailsSource().buildDetails(req)
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(req, response);
     }
+
 }

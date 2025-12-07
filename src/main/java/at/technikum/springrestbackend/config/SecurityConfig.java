@@ -29,11 +29,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/api/posts/**").permitAll()
 
                 // Role-based endpoints
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
-                .requestMatchers("/api/posts/**").hasAnyRole("USER", "ADMIN")
 
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
