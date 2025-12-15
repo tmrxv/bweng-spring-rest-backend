@@ -8,7 +8,6 @@ This is the backend for the **Time Capsule** web application, built with **Sprin
 
 - [Features](#features)
 - [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
 - [Setup and Running](#setup-and-running)
 - [Environment Variables](#environment-variables)
 - [API Documentation](#api-documentation)
@@ -41,19 +40,6 @@ This is the backend for the **Time Capsule** web application, built with **Sprin
 - Maven
 
 ---
-
-## Project Structure
-src/main/java
-│
-├── config/ # Configuration classes (Swagger, Security, Beans)
-├── controller/ # REST API controllers
-├── dto/ # Data Transfer Objects for requests/responses
-├── entity/ # JPA entities representing database tables
-├── repository/ # Spring Data repositories
-├── security/ # JWT filter and security logic
-├── service/ # Business logic and service layer
-└── SpringRestBackendApplication.java
-
 
 ### Layers Explained
 
