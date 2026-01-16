@@ -59,7 +59,12 @@ public class UserService {
         }
 
         if (req.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(req.getPassword()));
+            String password = req.getPassword();
+            if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")) {
+                throw new IllegalArgumentException
+                ("Password must contain at least one digit, one lowercase and one uppercase character and be at least 8 characters long");
+            }
+            user.setPassword(passwordEncoder.encode(password));
         }
 
         if (req.getCountry() != null) {
@@ -103,12 +108,25 @@ public class UserService {
             throw new DataIntegrityViolationException("Username already in use");
         }
 
+        // Validate password strength: at least one digit, one lowercase and one uppercase letter
+        String password = req.getPassword();
+        if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")) {
+            throw new IllegalArgumentException("Password must contain at least one digit, one lowercase and one uppercase character and be at least 8 characters long");
+        }
+
         User user = new User();
         user.setEmail(req.getEmail());
         user.setUsername(req.getUsername());
-        user.setPassword(passwordEncoder.encode(req.getPassword()));
+        user.setPassword(passwordEncoder.encode(password));
         user.setCountry(req.getCountry());
-        user.setProfileImageUrl(req.getProfileImageUrl());
+
+        // placeholder profile image if not provided
+        if (req.getProfileImageUrl() == null || req.getProfileImageUrl().isBlank()) {
+            user.setProfileImageUrl("https://www.gravatar.com/avatar/?d=mp");
+        } else {
+            user.setProfileImageUrl(req.getProfileImageUrl());
+        }
+
         user.setRole("USER");
 
         User saved = userRepository.save(user);
