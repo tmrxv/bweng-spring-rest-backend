@@ -25,7 +25,11 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<UserResponse>> listUsers(Pageable pageable) {
+    public ResponseEntity<Page<UserResponse>> listUsers(Pageable pageable, @AuthenticationPrincipal User currentUser) {
+        // security rule already restricts listing to ADMIN, but double-check
+        if (!currentUser.getRole().equals("ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         Page<UserResponse> page = userService.listUsers(pageable);
         return ResponseEntity.ok(page);
     }
@@ -42,21 +46,38 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateUserRequest req
+            @Valid @RequestBody UpdateUserRequest req,
+            @AuthenticationPrincipal User currentUser
     ) {
+        // only admin or owner may update
+        if (!currentUser.getRole().equals("ADMIN") && !currentUser.getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // only admin may update role
+        if (req.getRole() != null && !currentUser.getRole().equals("ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         try {
             UserResponse updated = userService.updateUser(id, req);
             return ResponseEntity.ok(updated);
         } catch (EntityNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (DataIntegrityViolationException ex) {
-            // z.B. Email oder Username schon vergeben
+            // e.g. email or username already in use
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+        // only admin or owner may delete
+        if (!currentUser.getRole().equals("ADMIN") && !currentUser.getId().equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         try {
             userService.deleteUser(id);
             return ResponseEntity.noContent().build();

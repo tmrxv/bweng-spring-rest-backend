@@ -33,8 +33,15 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/posts/**").permitAll()
+                // allow anonymous read access to posts
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/posts/**").permitAll()
+                // write operations require authentication (user or admin)
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/posts/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/posts/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/posts/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // only admins can list all users
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/users").hasRole("ADMIN")
                 .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

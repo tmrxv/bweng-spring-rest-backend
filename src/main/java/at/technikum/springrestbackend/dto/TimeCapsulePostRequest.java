@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 
 public class TimeCapsulePostRequest {
 
-    @NotNull
     private Long userId;
 
     @NotBlank
@@ -17,6 +16,10 @@ public class TimeCapsulePostRequest {
 
     @NotNull
     private LocalDateTime sendAt;
+
+    private String fileUrl;
+
+    private String fileType;
 
     public Long getUserId() {
         return userId;
@@ -48,5 +51,21 @@ public class TimeCapsulePostRequest {
 
     public void setSendAt(LocalDateTime sendAt) {
         this.sendAt = sendAt;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 }
