@@ -12,6 +12,9 @@ public class TimeCapsulePostResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private String fileUrl;
+    private String fileType;
+
     public Long getId() { 
         return id; 
     }
@@ -66,5 +69,21 @@ public class TimeCapsulePostResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) { 
         this.updatedAt = updatedAt; 
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 }

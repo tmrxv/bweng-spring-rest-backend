@@ -69,6 +69,15 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- In-memory DB for tests -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+
         <!-- JWT (io.jsonwebtoken) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -92,6 +101,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- MinIO -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.11</version>
         </dependency>
     </dependencies>
 

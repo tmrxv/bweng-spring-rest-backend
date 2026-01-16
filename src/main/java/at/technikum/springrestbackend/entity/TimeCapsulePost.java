@@ -14,7 +14,9 @@ public class TimeCapsulePost {
     private Long id;
 
     @NotNull
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @NotBlank
     private String title;
@@ -25,20 +27,18 @@ public class TimeCapsulePost {
     @NotNull
     private LocalDateTime sendAt;
 
+    @org.hibernate.annotations.CreationTimestamp
     private LocalDateTime createdAt;
 
+    @org.hibernate.annotations.UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    protected void onCreate(){
-        createdAt = LocalDateTime.now();
-        updatedAt = createdAt;
-    }
+    // optional attached file (image or document)
+    @Column(length = 2048)
+    private String fileUrl;
 
-    @PreUpdate
-    protected void onUpdate(){
-        updatedAt = LocalDateTime.now();
-    }
+    @Column(length = 255)
+    private String fileType;
 
     public Long getId(){
         return id;
@@ -48,12 +48,12 @@ public class TimeCapsulePost {
         this.id = id;
     }
 
-    public Long getUserId(){
-        return userId;
+    public User getUser() { 
+        return user; 
     }
 
-    public void setUserId(Long userId){
-        this.userId = userId;
+    public void setUser(User user) { 
+        this.user = user; 
     }
 
     public String getTitle(){
@@ -94,5 +94,21 @@ public class TimeCapsulePost {
 
     public void setUpdatedAt(LocalDateTime updatedAt){
         this.updatedAt = updatedAt;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 }
