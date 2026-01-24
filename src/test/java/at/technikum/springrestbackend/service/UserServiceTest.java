@@ -1,9 +1,11 @@
 package at.technikum.springrestbackend.service;
 
 import at.technikum.springrestbackend.dto.RegisterRequest;
+import at.technikum.springrestbackend.dto.UpdateUserRequest;
 import at.technikum.springrestbackend.dto.UserResponse;
 import at.technikum.springrestbackend.entity.User;
 import at.technikum.springrestbackend.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -40,7 +42,7 @@ public class UserServiceTest {
         req.setEmail("new@example.com");
         req.setUsername("newuser");
         req.setPassword("weakpass");
-        req.setCountry("US");
+        req.setCountry("AT");
 
         assertThrows(IllegalArgumentException.class, () -> service.register(req));
     }
@@ -50,11 +52,40 @@ public class UserServiceTest {
         RegisterRequest req = new RegisterRequest();
         req.setEmail("new2@example.com");
         req.setUsername("newuser2");
-        req.setPassword("Str0ngPass");
-        req.setCountry("US");
+        req.setPassword("ValidPass1!");
+        req.setCountry("AT");
         req.setProfileImageUrl("");
 
         UserResponse resp = service.register(req);
         assertEquals("https://www.gravatar.com/avatar/?d=mp", resp.getProfileImageUrl());
+    }
+
+    @Test
+    public void updateUserChangesEmailAndCountry() {
+        User user = new User();
+        user.setId(5L);
+        user.setEmail("old@example.com");
+        user.setUsername("oldname");
+        user.setPassword("encoded");
+        user.setCountry("AT");
+
+        when(repo.findById(5L)).thenReturn(java.util.Optional.of(user));
+        when(repo.existsByEmail("new@example.com")).thenReturn(false);
+        when(repo.existsByUsername("oldname")).thenReturn(false);
+        when(repo.save(user)).thenReturn(user);
+
+        UpdateUserRequest req = new UpdateUserRequest();
+        req.setEmail("new@example.com");
+        req.setCountry("DE");
+
+        UserResponse resp = service.updateUser(5L, req);
+        assertEquals("new@example.com", resp.getEmail());
+        assertEquals("DE", resp.getCountry());
+    }
+
+    @Test
+    public void deleteUserThrowsWhenMissing() {
+        when(repo.existsById(999L)).thenReturn(false);
+        assertThrows(EntityNotFoundException.class, () -> service.deleteUser(999L));
     }
 }
