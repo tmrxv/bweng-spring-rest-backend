@@ -26,6 +26,10 @@ public class AuthService {
         User user = userRepository.findByEmail(req.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
 
+        if (user.isLocked()) {
+            throw new IllegalStateException("Account is locked");
+        }
+
         if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Invalid email or password");
         }

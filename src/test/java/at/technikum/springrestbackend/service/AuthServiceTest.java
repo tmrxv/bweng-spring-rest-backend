@@ -69,4 +69,20 @@ class AuthServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> authService.login(req));
     }
+
+    @Test
+    void loginThrowsWhenUserLocked() {
+        User user = new User();
+        user.setEmail("locked@example.com");
+        user.setPassword("encoded");
+        user.setLocked(true);
+
+        LoginRequest req = new LoginRequest();
+        req.setEmail("locked@example.com");
+        req.setPassword("raw");
+
+        when(userRepository.findByEmail("locked@example.com")).thenReturn(Optional.of(user));
+
+        assertThrows(IllegalStateException.class, () -> authService.login(req));
+    }
 }
