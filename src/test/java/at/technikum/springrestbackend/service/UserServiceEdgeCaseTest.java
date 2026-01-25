@@ -18,12 +18,16 @@ import static org.mockito.Mockito.when;
 class UserServiceEdgeCaseTest {
 
     private UserRepository repo;
+    private FileStorageService fileStorageService;
+    private at.technikum.springrestbackend.repository.TimeCapsulePostRepository postRepository;
     private UserService service;
 
     @BeforeEach
     void setup() {
         repo = Mockito.mock(UserRepository.class);
-        service = new UserService(repo, new BCryptPasswordEncoder());
+        fileStorageService = Mockito.mock(FileStorageService.class);
+        postRepository = Mockito.mock(at.technikum.springrestbackend.repository.TimeCapsulePostRepository.class);
+        service = new UserService(repo, new BCryptPasswordEncoder(), fileStorageService, postRepository);
     }
 
     @Test

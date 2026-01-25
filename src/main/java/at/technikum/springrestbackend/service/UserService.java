@@ -11,17 +11,27 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final FileStorageService fileStorageService;
+    private final at.technikum.springrestbackend.repository.TimeCapsulePostRepository postRepository;
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       FileStorageService fileStorageService,
+                       at.technikum.springrestbackend.repository.TimeCapsulePostRepository postRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.fileStorageService = fileStorageService;
+        this.postRepository = postRepository;
     }
 
     public Page<UserResponse> listUsers(Pageable pageable) {
@@ -83,10 +93,13 @@ public class UserService {
         return toResponse(saved);
     }
 
+    @Transactional
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException("User with id " + id + " not found");
         }
+        // Delete user's posts first to avoid FK constraint violation
+        postRepository.deleteByUserId(id);
         userRepository.deleteById(id);
     }
 
@@ -135,6 +148,19 @@ public class UserService {
         user.setRole("USER");
         user.setLocked(false); 
 
+        User saved = userRepository.save(user);
+        return toResponse(saved);
+    }
+
+    public UserResponse uploadProfileImage(Long userId, MultipartFile file) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        
+        // Use FileStorageService which handles MinIO or local storage
+        String fileUrl = fileStorageService.storeFile(file);
+        
+        // Update user with URL
+        user.setProfileImageUrl(fileUrl);
         User saved = userRepository.save(user);
         return toResponse(saved);
     }

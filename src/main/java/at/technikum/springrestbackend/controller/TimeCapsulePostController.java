@@ -30,7 +30,7 @@ public class TimeCapsulePostController {
     public ResponseEntity<TimeCapsulePostResponse> createPost(
             @Valid @org.springframework.lang.NonNull @RequestBody TimeCapsulePostRequest request,
             @AuthenticationPrincipal User currentUser) {
-        return ResponseEntity.ok(service.save(request, currentUser));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.save(request, currentUser));
     }
 
     @GetMapping
