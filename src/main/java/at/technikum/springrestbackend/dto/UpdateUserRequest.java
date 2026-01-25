@@ -20,8 +20,9 @@ public class UpdateUserRequest {
 
     private String profileImageUrl;
 
-    // Optional, in case you later want admin updates
     private String role;
+
+    private Boolean locked;
 
     public String getEmail() {
         return email;
@@ -69,5 +70,13 @@ public class UpdateUserRequest {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Boolean getLocked() { 
+        return locked; 
+    }
+
+    public void setLocked(Boolean locked) { 
+        this.locked = locked; 
     }
 }
