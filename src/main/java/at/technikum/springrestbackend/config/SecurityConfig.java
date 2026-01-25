@@ -33,7 +33,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                // allow anonymous read access to posts
+                // allow anonymous read access to posts and home
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/home").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/posts/**").permitAll()
                 // write operations require authentication (user or admin)
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/posts/**").hasAnyRole("USER", "ADMIN")

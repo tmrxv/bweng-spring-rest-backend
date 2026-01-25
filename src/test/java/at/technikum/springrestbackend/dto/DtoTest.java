@@ -68,7 +68,7 @@ class DtoTest {
     @Test
     void userResponseConstructorAndGetters() {
         OffsetDateTime now = OffsetDateTime.now();
-        UserResponse resp = new UserResponse(1L, "user@example.com", "username", "US", "http://pic.png", "USER", now);
+        UserResponse resp = new UserResponse(1L, "user@example.com", "username", "US", "http://pic.png", "USER", false, now);
 
         assertThat(resp.getId()).isEqualTo(1L);
         assertThat(resp.getEmail()).isEqualTo("user@example.com");
@@ -76,10 +76,13 @@ class DtoTest {
         assertThat(resp.getCountry()).isEqualTo("US");
         assertThat(resp.getProfileImageUrl()).isEqualTo("http://pic.png");
         assertThat(resp.getRole()).isEqualTo("USER");
+        assertThat(resp.isLocked()).isFalse();
         assertThat(resp.getCreatedAt()).isEqualTo(now);
 
         resp.setRole("ADMIN");
         assertThat(resp.getRole()).isEqualTo("ADMIN");
+        resp.setLocked(true);
+        assertThat(resp.isLocked()).isTrue();
     }
 
     @Test

@@ -124,7 +124,7 @@ class TimeCapsulePostControllerIntegrationTest {
                         .header("Authorization", authHeader(owner))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createJson))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.title").value("First"))
                 .andReturn();
 
