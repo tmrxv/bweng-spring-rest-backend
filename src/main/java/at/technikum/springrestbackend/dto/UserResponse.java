@@ -3,26 +3,30 @@ package at.technikum.springrestbackend.dto;
 import java.time.OffsetDateTime;
 
 public class UserResponse {
+
     private Long id;
     private String email;
     private String username;
     private String country;
     private String profileImageUrl;
     private String role;
+
+    private boolean locked;
+
     private OffsetDateTime createdAt;
 
-    public UserResponse() {
+    public UserResponse() {}
 
-    }
-
-    public UserResponse(Long id, String email, String username, String country, 
-                        String profileImageUrl, String role, OffsetDateTime createdAt) {
+    public UserResponse(Long id, String email, String username, String country,
+                        String profileImageUrl, String role, boolean locked,
+                        OffsetDateTime createdAt) {
         this.id = id;
         this.email = email;
         this.username = username;
         this.country = country;
         this.profileImageUrl = profileImageUrl;
         this.role = role;
+        this.locked = locked;
         this.createdAt = createdAt;
     }
 
@@ -66,6 +70,14 @@ public class UserResponse {
     }
     public void setRole(String role) { 
         this.role = role; 
+    }
+
+    public boolean isLocked() { 
+        return locked; 
+    }
+
+    public void setLocked(boolean locked) { 
+        this.locked = locked; 
     }
 
     public OffsetDateTime getCreatedAt() { 

@@ -51,6 +51,9 @@ public class User {
     @Column(nullable = false, length = 30)
     private String role = "USER";
 
+    @Column(nullable = false)
+    private boolean locked = false;
+
     @Column(nullable = false, updatable = false)
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
@@ -62,9 +65,7 @@ public class User {
         this.updatedAt = OffsetDateTime.now();
     }
 
-    public User() {
-
-    }
+    public User() {}
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + this.role));
@@ -119,6 +120,14 @@ public class User {
     }
     public void setRole(String role) { 
         this.role = role; 
+    }
+
+    public boolean isLocked() { 
+        return locked; 
+    }
+
+    public void setLocked(boolean locked) { 
+        this.locked = locked; 
     }
 
     public OffsetDateTime getCreatedAt() { 

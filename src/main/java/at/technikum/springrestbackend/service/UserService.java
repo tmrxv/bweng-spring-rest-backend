@@ -1,4 +1,6 @@
 package at.technikum.springrestbackend.service;
+
+import at.technikum.springrestbackend.dto.RegisterRequest;
 import at.technikum.springrestbackend.dto.UpdateUserRequest;
 import at.technikum.springrestbackend.dto.UserResponse;
 import at.technikum.springrestbackend.entity.User;
@@ -7,10 +9,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import at.technikum.springrestbackend.dto.RegisterRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
@@ -19,15 +19,13 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository,
-                    PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-
     public Page<UserResponse> listUsers(Pageable pageable) {
-        return userRepository.findAll(pageable)
-                .map(this::toResponse);
+        return userRepository.findAll(pageable).map(this::toResponse);
     }
 
     public UserResponse getUser(Long id) {
@@ -61,8 +59,9 @@ public class UserService {
         if (req.getPassword() != null) {
             String password = req.getPassword();
             if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")) {
-                throw new IllegalArgumentException
-                ("Password must contain at least one digit, one lowercase and one uppercase character and be at least 8 characters long");
+                throw new IllegalArgumentException(
+                        "Password must contain at least one digit, one lowercase and one uppercase character and be at least 8 characters long"
+                );
             }
             user.setPassword(passwordEncoder.encode(password));
         }
@@ -75,6 +74,9 @@ public class UserService {
         }
         if (req.getRole() != null) {
             user.setRole(req.getRole());
+        }
+        if (req.getLocked() != null) {
+            user.setLocked(req.getLocked());
         }
 
         User saved = userRepository.save(user);
@@ -96,6 +98,7 @@ public class UserService {
                 user.getCountry(),
                 user.getProfileImageUrl(),
                 user.getRole(),
+                user.isLocked(),
                 user.getCreatedAt()
         );
     }
@@ -111,7 +114,9 @@ public class UserService {
         // Validate password strength: at least one digit, one lowercase and one uppercase letter
         String password = req.getPassword();
         if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$")) {
-            throw new IllegalArgumentException("Password must contain at least one digit, one lowercase and one uppercase character and be at least 8 characters long");
+            throw new IllegalArgumentException(
+                    "Password must contain at least one digit, one lowercase and one uppercase character and be at least 8 characters long"
+            );
         }
 
         User user = new User();
@@ -128,6 +133,7 @@ public class UserService {
         }
 
         user.setRole("USER");
+        user.setLocked(false); 
 
         User saved = userRepository.save(user);
         return toResponse(saved);
