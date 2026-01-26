@@ -14,4 +14,6 @@ public interface TimeCapsulePostRepository extends JpaRepository<TimeCapsulePost
     Page<TimeCapsulePost> findByUserIdAndTitleContainingIgnoreCase(Long userId, String title, Pageable pageable);
 
     java.util.List<TimeCapsulePost> findTop5ByOrderByCreatedAtDesc();
+    
+    void deleteByUserId(Long userId);
 }

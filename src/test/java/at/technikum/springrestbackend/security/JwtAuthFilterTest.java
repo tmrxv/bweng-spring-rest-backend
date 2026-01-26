@@ -74,4 +74,27 @@ class JwtAuthFilterTest {
         verify(chain, times(1)).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
         assertEquals(null, SecurityContextHolder.getContext().getAuthentication());
     }
+
+    @Test
+    void doesNotAuthenticateLockedUser() throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/api/posts");
+        request.addHeader("Authorization", "Bearer token-abc");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        User user = new User();
+        user.setEmail("user@example.com");
+        user.setRole("USER");
+        user.setLocked(true);
+        when(jwtService.extractSubject("token-abc")).thenReturn("user@example.com");
+        when(jwtService.isTokenValid("token-abc", "user@example.com")).thenReturn(true);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
+
+        FilterChain chain = mock(FilterChain.class);
+        filter.doFilterInternal(request, response, chain);
+
+        // should skip setting authentication
+        assertEquals(null, SecurityContextHolder.getContext().getAuthentication());
+        verify(chain, times(1)).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
 }

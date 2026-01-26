@@ -41,6 +41,8 @@ public class AuthController {
         try {
             LoginResponse resp = authService.login(req);
             return ResponseEntity.ok(resp);
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.LOCKED).body(ex.getMessage());
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
         }

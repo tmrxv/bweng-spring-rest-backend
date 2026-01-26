@@ -9,7 +9,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -19,11 +21,16 @@ import static org.mockito.Mockito.when;
 public class UserServiceTest {
 
     private UserRepository repo;
+    private FileStorageService fileStorageService;
+    private at.technikum.springrestbackend.repository.TimeCapsulePostRepository postRepository;
     private UserService service;
 
     @BeforeEach
     public void setup() {
         repo = Mockito.mock(UserRepository.class);
+        fileStorageService = Mockito.mock(FileStorageService.class);
+        postRepository = Mockito.mock(at.technikum.springrestbackend.repository.TimeCapsulePostRepository.class);
+        
         when(repo.existsByEmail("taken@example.com")).thenReturn(true);
         when(repo.existsByUsername("takenusername")).thenReturn(true);
 
@@ -33,7 +40,7 @@ public class UserServiceTest {
             return u;
         });
 
-        service = new UserService(repo, new BCryptPasswordEncoder());
+        service = new UserService(repo, new BCryptPasswordEncoder(), fileStorageService, postRepository);
     }
 
     @Test
@@ -87,5 +94,29 @@ public class UserServiceTest {
     public void deleteUserThrowsWhenMissing() {
         when(repo.existsById(999L)).thenReturn(false);
         assertThrows(EntityNotFoundException.class, () -> service.deleteUser(999L));
+    }
+
+    @Test
+    public void uploadProfileImageThrowsWhenUserNotFound() throws Exception {
+        when(repo.findById(999L)).thenReturn(java.util.Optional.empty());
+        MultipartFile file = new MockMultipartFile("file", "test.png", "image/png", "content".getBytes());
+        
+        assertThrows(EntityNotFoundException.class, () -> service.uploadProfileImage(999L, file));
+    }
+
+    @Test
+    public void uploadProfileImageThrowsForInvalidFileType() throws Exception {
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+        user.setUsername("testuser");
+        
+        when(repo.findById(1L)).thenReturn(java.util.Optional.of(user));
+        MultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "content".getBytes());
+        
+        // Mock FileStorageService to throw exception for invalid file type
+        when(fileStorageService.storeFile(file)).thenThrow(new IllegalArgumentException("File type not allowed: text/plain"));
+        
+        assertThrows(IllegalArgumentException.class, () -> service.uploadProfileImage(1L, file));
     }
 }

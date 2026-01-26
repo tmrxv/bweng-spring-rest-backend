@@ -33,7 +33,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                // allow anonymous read access to posts
+                .requestMatchers("/uploads/**").permitAll()
+                // allow anonymous read access to posts and home
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/home").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/posts/**").permitAll()
                 // write operations require authentication (user or admin)
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/posts/**").hasAnyRole("USER", "ADMIN")
@@ -53,7 +55,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
